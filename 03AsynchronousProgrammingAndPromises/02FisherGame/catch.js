@@ -2,8 +2,7 @@ function attachEvents() {
     let loadBtn = $(".load");
     let addBtn = $(".add");
     let updateBtns = document.querySelectorAll(".update");
-    console.log(updateBtns);
-    let deleteBtn = $(".delete");
+    let deleteBtns = document.querySelectorAll(".delete");
 
     let url = `https://baas.kinvey.com/appdata/kid_HJenMYMFE/biggestCatches`;
     let encodedCredentials = btoa('guest:guest');
@@ -22,21 +21,66 @@ function attachEvents() {
         })
     }
 
-    updateBtns.forEach(function(btn) {
+    updateBtns.forEach(function (btn) {
         btn.addEventListener("click", updateCatch)
     })
 
     function updateCatch() {
-        let target = $('event.target');
+        let target = $(this).parent();
 
-        let angler = $("target > .angler").val();
+        let htmlCollection = target['0'].children;
 
-        console.log(target);
-        let weight = $("#addForm > .weight").val();
-        let species = $("#addForm > .species").val();
-        let location = $("#addForm > .location").val();
-        let bait = $("#addForm > .bait").val();
-        let captureTime = $('#addForm > .captureTime').val();
+        let angler = htmlCollection[1].value;
+        let weight = htmlCollection[3].value;
+        let species = htmlCollection[5].value;
+        let location = htmlCollection[7].value;
+        let bait = htmlCollection[9].value;
+        let captureTime = htmlCollection[11].value;
+        let catchId = htmlCollection[12].value;
+
+        let catchObj = {
+            "angler": `${angler} `,
+            "weight": `${weight} `,
+            "species": `${species} `,
+            "location": `${location} `,
+            "bait": `${bait} `,
+            "captureTime": `${captureTime} `
+        };
+
+        let response = $.ajax({
+            url: url + `/${catchId}`,
+            method: "PUT",
+            //success: displayAllCatches,
+            data: JSON.stringify(catchObj),
+            headers:
+            {
+                "Content-type": "application/json",
+                "Authorization": `Basic ${encodedCredentials}`
+            }
+        })
+    }
+
+    deleteBtns.forEach(function (btn) {
+        btn.addEventListener("click", deleteCatch)
+    })
+
+    async function deleteCatch() {
+        let target = $(this).parent();
+
+        let htmlCollection = target['0'].children
+
+        let catchId = htmlCollection[12].value;
+
+        let response = await $.ajax({
+            url: url + `/${catchId}`,
+            method: "DELETE",
+            success: displayAllCatches,
+            headers:
+            {
+                "Content-type": "application/json",
+                "Authorization": `Basic ${encodedCredentials}`
+            }
+        })
     }
 
     function displayAllCatches(response) {
@@ -60,11 +104,18 @@ function attachEvents() {
                         <button class="delete">Delete</button>
         </div>
         `)
-        updateBtns = document.querySelectorAll(".update");
+            updateBtns = document.querySelectorAll(".update");
 
-        updateBtns.forEach(function(btn) {
-            btn.addEventListener("click", updateCatch)
-        })
+            updateBtns.forEach(function (btn) {
+                btn.addEventListener("click", updateCatch)
+            })
+
+            let deleteBtns = document.querySelectorAll(".delete");
+          
+            deleteBtns.forEach(function (btn) {
+                btn.addEventListener("click", deleteCatch)
+            })
+        
         };
     }
 
