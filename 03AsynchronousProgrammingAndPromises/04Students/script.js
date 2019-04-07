@@ -42,7 +42,17 @@ function solution() {
     };
 
     function displayAllStudents(response) {
-        for (let item of response) {
+        let orderedResponse = response.sort(compare);
+
+        function compare(a,b) {
+            if (a.ID < b.ID)
+              return -1;
+            if (a.ID > b.ID)
+              return 1;
+            return 0;
+          }
+          
+        for (let item of orderedResponse) {
             $('#results tr:last').after(`
             <tr>
                <td>${item.ID}</td>
@@ -63,11 +73,11 @@ function solution() {
         let grade = $("#addForm > .grade").val();
         
         let studentObj = {
-            "ID": `${Number(id)}`,
-            "FirstName": `${firstName}`,
-            "LastName": `${lastName}`,
-            "FacultyNumber": `${facultyNumber}`,
-            "Grade": `${Number(grade)}`,
+            ID: `${parseInt(id)}`,
+            FirstName: `${firstName}`,
+            LastName: `${lastName}`,
+            FacultyNumber: `${facultyNumber}`,
+            Grade: `${parseFloat(grade)}`,
         };
 
         $.ajax({
